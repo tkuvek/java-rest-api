@@ -27,6 +27,33 @@ public class EmployeeEntity {
         if (departments.isEmpty()) {
             return "{\"error:\": \"No employees found for company " + companyName + ".\"}";
         }
-        return gson.toJson(departments);    }
+        return gson.toJson(departments);    
+    }
+    
+    public String getEmployee(int employeeId) {
+        Employee employee = dl.getEmployee(employeeId);
+        if (employee == null) {
+            return "{\"error:\": \"No employee found with id " + employeeId + ".\"}";
+        }
+        return gson.toJson(employee);
+    }
+
+    public String insertEmployee(Employee employee) {
+        if(dl.insertEmployee(employee) == null){
+            return "{\"error:\": \"Failed to insert employee.\"}";
+        } else {
+            return gson.toJson(employee.toString());
+        }
+    }
+
+    public String updateEmployee(String inJson) {
+      Employee employee = gson.fromJson(inJson, Employee.class);
+      dl.updateEmployee(employee);
+      return gson.toJson(employee);
+    }
+    
+    public int deleteEmployee(int id) {
+        return dl.deleteEmployee(id);
+    }
     
 }

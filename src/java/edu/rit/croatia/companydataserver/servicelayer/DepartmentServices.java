@@ -57,7 +57,7 @@ public class DepartmentServices {
         Department deptObject = new Department(c, dept_name, dept_no, location);
         // String inJson = Response.ok(deptObject.toString());
         company.insertDepartment(deptObject);
-        return Response.ok("Department created: " + deptObject.toString()).build();
+        return Response.ok("{\n" + " \"success\":" + gson.toJson(deptObject) + "\n}").build();
     }
 
     @Path("department")
