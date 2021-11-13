@@ -66,7 +66,6 @@ public class DepartmentServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDepartment(String inJson) {
-        // DepartmentEntity dept = gson.fromJson(inJson, DepartmentEntity.class);
         String updateDepartment = company.updateDepartment(inJson);
         return Response.ok(updateDepartment).build();
     }
@@ -79,7 +78,7 @@ public class DepartmentServices {
         if(company.deleteDepartment(companyName, id) == 0) {
             return Response.ok("{\"error:\": \"Failed to delete department with id: " + id +".\"}").build();
         } else {
-            return Response.ok("{\n" + " \"success\": \"Department with id" + id + " deleted.\"}").build();
+            return Response.ok("{\n" + " \"success\": \"Department with id " + id + " deleted.\"}").build();
         }
     }
 }

@@ -23,6 +23,7 @@ public class ApplicationConfig extends Application {
      * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(edu.rit.croatia.companydataserver.servicelayer.CompanyServices.class);
         resources.add(edu.rit.croatia.companydataserver.servicelayer.DepartmentServices.class);
         resources.add(edu.rit.croatia.companydataserver.servicelayer.EmployeeServices.class);
         resources.add(edu.rit.croatia.companydataserver.servicelayer.TimecardServices.class);

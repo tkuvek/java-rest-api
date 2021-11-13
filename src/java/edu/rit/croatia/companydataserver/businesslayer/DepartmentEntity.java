@@ -80,11 +80,4 @@ public class DepartmentEntity {
           return dept_id;
       }
    }
-    // @Override
-    // public String toString() {
-    //     // area = Math.PI * this.radius * this.radius;
-    //     String str = "{\"id\":\"" + this.id + "\",\"radius\":\"" + this.radius + "\", \"area\":\"" + this.area + "\"}";
-    //     return str;
-    // }
-
 }
