@@ -41,12 +41,13 @@ public class DepartmentEntity {
         Department department = dl.getDepartment(companyName, Integer.parseInt(deptId));
         if (department == null) {
             return "{\"error:\": \"No department found for company " + companyName + ".\"}";
+        } else {
+            return gson.toJson(department);
         }
-        return gson.toJson(department);
     }
     
-        /*
-        Create/Insert a specific department
+    /*
+      Create/Insert a specific department
     */
     public Department insertDepartment(Department dept) {
         if(dl.insertDepartment(dept) == null){
@@ -61,15 +62,23 @@ public class DepartmentEntity {
 */
   public String updateDepartment(String dept){
       Department department = gson.fromJson(dept, Department.class);
-      dl.updateDepartment(department);
-      return dept;
+        if (dl.updateDepartment(department) == null) {
+            return "{\"error:\": \"Unable to update department.\"}";
+        } else {
+            return "{\n" + " \"success\":" + gson.toJson(department) + "\n}";
+        }
    }
 
 /*
     Updates a specific department
 */
   public int deleteDepartment(String comp, int dept_id){
-      return dl.deleteDepartment(comp, dept_id);
+      
+      if(dl.deleteDepartment(comp, dept_id) == 0) {
+         return 0;
+      } else {
+          return dept_id;
+      }
    }
     // @Override
     // public String toString() {

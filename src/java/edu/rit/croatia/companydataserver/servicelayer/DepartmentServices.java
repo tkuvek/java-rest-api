@@ -52,12 +52,13 @@ public class DepartmentServices {
                                      @FormParam("dept_name") String dept_name,
                                      @FormParam("dept_no") String dept_no, 
                                      @FormParam("location") String location
-                                    ) {
-                                         
+                                    ) {                                 
         Department deptObject = new Department(c, dept_name, dept_no, location);
-        // String inJson = Response.ok(deptObject.toString());
-        company.insertDepartment(deptObject);
-        return Response.ok("{\n" + " \"success\":" + gson.toJson(deptObject) + "\n}").build();
+        if(company.insertDepartment(deptObject) == null){
+            return Response.ok("{\"error:\": \"Failed to insert department.\"}").build();
+        } else {
+            return Response.ok("{\n" + " \"success\":" + gson.toJson(deptObject) + "\n}").build();
+        }
     }
 
     @Path("department")
@@ -66,8 +67,8 @@ public class DepartmentServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDepartment(String inJson) {
         // DepartmentEntity dept = gson.fromJson(inJson, DepartmentEntity.class);
-        company.updateDepartment(inJson);
-        return Response.ok("Department Updated: " + inJson).build();
+        String updateDepartment = company.updateDepartment(inJson);
+        return Response.ok(updateDepartment).build();
     }
 
     @Path("department")
@@ -75,10 +76,10 @@ public class DepartmentServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDepartment(@QueryParam("dept_id") int id, @QueryParam("company") String companyName) {
-        // return Response.ok("id is: " + id.getClass()).build();
-        company.deleteDepartment(companyName, id);
-        // if delete DB record successful send ok, otherwise Repsonse.Status.NO_CONTENT
-        // with no msg
-        return Response.ok("Department Deleted").build();
+        if(company.deleteDepartment(companyName, id) == 0) {
+            return Response.ok("{\"error:\": \"Failed to delete department with id: " + id +".\"}").build();
+        } else {
+            return Response.ok("{\n" + " \"success\": \"Department with id" + id + " deleted.\"}").build();
+        }
     }
 }

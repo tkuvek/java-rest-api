@@ -52,20 +52,17 @@ public class EmployeeServices {
                                    @FormParam("dept_id") int dept_id,
                                    @FormParam("mng_id") int mng_id){
         Employee employeeObject = new Employee(emp_name, emp_no, hire_date, job, salary, dept_id, mng_id);
-        // String inJson = Response.ok(deptObject.toString());
-        company.insertEmployee(employeeObject);
-        return Response.ok("{\n" + " \"success\":" + gson.toJson(employeeObject) + "\n}").build();
+        String insertEmployee = company.insertEmployee(employeeObject);
+        return Response.ok(insertEmployee).build();
     }
     
     @Path("employee")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateEmployee(Employee employee) {
-        String inJson = gson.toJson(employee, Employee.class);
-        // DepartmentEntity dept = gson.fromJson(inJson, DepartmentEntity.class);
-        company.updateEmployee(inJson);
-        return Response.ok("Employee Updated: " + inJson).build();
+    public Response updateEmployee(String inJson) {
+        String updateEmployee = company.updateEmployee(inJson);
+        return Response.ok(updateEmployee).build();
     }
     
     @Path("employee")
@@ -73,11 +70,11 @@ public class EmployeeServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEmployee(@QueryParam("emp_id") int id) {
-        // return Response.ok("id is: " + id.getClass()).build();
-        company.deleteEmployee(id);
-        // if delete DB record successful send ok, otherwise Repsonse.Status.NO_CONTENT
-        // with no msg
-        return Response.ok("Employee " + id + " deleted.").build();
+        if(company.deleteEmployee(id) == 0) {
+            return Response.ok("{\"error:\": \"Failed to delete employee with id: " + id +".\"}").build();
+        } else {
+            return Response.ok("{\n" + " \"success\": \"Employee " + id + " deleted.\"}").build();
+        }
     }
-
+    
 }
