@@ -33,7 +33,7 @@ public class TimecardEntity {
     public String getTimecards(String emp_id) {
         List<Timecard> timecards = dl.getAllTimecard(Integer.parseInt(emp_id));
         if (timecards.isEmpty()) {
-            return "{\"error:\": \"No department found for company " + emp_id + ".\"}";
+            return "{\"error:\": \"No timecards found for employee " + emp_id + ".\"}";
         }
         return gson.toJson(timecards);
     }
@@ -44,6 +44,12 @@ public class TimecardEntity {
         } else {
             return inTC;
         }
+    }
+    
+    public String updateTimecard(String inJson) {
+      Timecard timecard = gson.fromJson(inJson, Timecard.class);
+      dl.updateTimecard(timecard);
+      return inJson;
     }
 
     public int deleteTimecard(int timecard_id) {

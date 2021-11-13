@@ -5,6 +5,7 @@ import edu.rit.croatia.companydataserver.businesslayer.TimecardEntity;
 import javax.ws.rs.core.*;
 
 import com.google.gson.Gson;
+import companydata.Employee;
 import java.sql.Timestamp;
 
 import java.text.DateFormat;
@@ -57,7 +58,18 @@ public class TimecardServices {
         Timecard tcObject = new Timecard(start_time, end_time, emp_id);
         // String inJson = Response.ok(deptObject.toString());
         company.insertTimecard(tcObject);
-        return Response.ok("Timecard created: " + "Start time: " + tcObject.getStartTime() + " End time: " + tcObject.getEndTime() + " Employer id: " + tcObject.getEmpId() + "\n" + tcObject.toString()).build();
+        return Response.ok("{\n" + "\"success\":{\n" + "{\n" + "\"start_time\":" + tcObject.getStartTime() + "\n" + "\"end_time\":" + tcObject.getEndTime() + "\n" + "\"emp_id\":" + tcObject.getEmpId() + "\n}" + "\n}").build();
+    }
+
+    @Path("timecard")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTimecard(String inJson) {
+        // String inJson = gson.toJson(timecard, Timecard.class);
+        // DepartmentEntity dept = gson.fromJson(inJs"on, DepartmentEntity.class);
+        company.updateTimecard(inJson);
+        return Response.ok("{\n" + "\"success\":" + inJson + "\n}").build();
     }
 
     @Path("timecard")
@@ -66,7 +78,7 @@ public class TimecardServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDepartment(@QueryParam("timecard_id") int timecard_id) {
         company.deleteTimecard(timecard_id);
-        return Response.ok("Timecard number " + timecard_id +  " deleted").build();
+        return Response.ok("{\n" + "\"success\": " + "Timecard " + timecard_id + " deleted" + "\n}").build();
     }
 
 }
