@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package edu.rit.croatia.companydataserver.servicelayer;
 
 import edu.rit.croatia.companydataserver.businesslayer.CompanyEntity;
@@ -14,13 +10,9 @@ import com.google.gson.Gson;
 
 import javax.ws.rs.*;
 
-/**
- *
- * @author Kuvek
- */
 @Path("CompanyServices")
 public class CompanyServices {
-    private CompanyEntity company = null;
+    private CompanyEntity company = null;    
     private Gson gson = null;
 
     @Context
@@ -31,10 +23,15 @@ public class CompanyServices {
      */
     public CompanyServices() {
         gson = new Gson();
-        company = new CompanyEntity();
+        company = new CompanyEntity();        
     }
     
-    
+    /**
+     * Delete all information for a specific company name
+     * Removes all departments, employees and timecards linked to the company
+     * @param companyName
+     * @return Response
+     */
     @Path("company")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
@@ -46,6 +43,5 @@ public class CompanyServices {
             return Response.ok("{\"error:\": \"Failed to delete company with name: " + companyName +".\"}").build();
         }
     }
-    
     
 }

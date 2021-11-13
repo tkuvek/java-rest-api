@@ -4,10 +4,6 @@ import com.google.gson.Gson;
 import companydata.*;
 import java.util.List;
 
-/**
- *
- * @author Kristina
- */
 public class DepartmentEntity {
 
     private DataLayer dl = null;
@@ -26,6 +22,11 @@ public class DepartmentEntity {
         }
     }
 
+    /**
+     * Gets all departments
+     * @param companyName
+     * @return String Json List
+     */
     public String getDepartments(String companyName) {
         List<Department> departments = dl.getAllDepartment(companyName);
         if (departments.isEmpty()) {
@@ -35,8 +36,16 @@ public class DepartmentEntity {
     }
 
     /*
-        Gets a specific department
+        
     */
+
+    /**
+     * Gets a specific department
+     * @param companyName
+     * @param deptId
+     * @return Json Department Object
+     */
+
     public String getDepartment(String companyName, String deptId) {
         Department department = dl.getDepartment(companyName, Integer.parseInt(deptId));
         if (department == null) {
@@ -46,9 +55,12 @@ public class DepartmentEntity {
         }
     }
     
-    /*
-      Create/Insert a specific department
-    */
+    /**
+     * Create/Insert a new department
+     * @param dept
+     * @return Department object
+     */
+
     public Department insertDepartment(Department dept) {
         if(dl.insertDepartment(dept) == null){
             return null;
@@ -57,10 +69,12 @@ public class DepartmentEntity {
         }
     }
 
-/*
-    Updates a specific department
-*/
-  public String updateDepartment(String dept){
+    /**
+     * Put/update of a specific Department
+     * @param dept
+     * @return Json string of the updated object
+     */
+    public String updateDepartment(String dept){
       Department department = gson.fromJson(dept, Department.class);
         if (dl.updateDepartment(department) == null) {
             return "{\"error:\": \"Unable to update department.\"}";
@@ -69,10 +83,13 @@ public class DepartmentEntity {
         }
    }
 
-/*
-    Updates a specific department
-*/
-  public int deleteDepartment(String comp, int dept_id){
+    /**
+     * Deletes a department by dept_id
+     * @param comp
+     * @param dept_id
+     * @return int of the deleted department
+     */
+    public int deleteDepartment(String comp, int dept_id){
       
       if(dl.deleteDepartment(comp, dept_id) == 0) {
          return 0;

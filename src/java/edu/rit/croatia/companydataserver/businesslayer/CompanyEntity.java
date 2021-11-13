@@ -7,10 +7,6 @@ package edu.rit.croatia.companydataserver.businesslayer;
 import com.google.gson.Gson;
 import companydata.DataLayer;
 
-/**
- *
- * @author Kuvek
- */
 public class CompanyEntity {
     private DataLayer dl = null;
     public Gson gson = null;
@@ -28,6 +24,11 @@ public class CompanyEntity {
         }
     }
 
+    /**
+     * DELETE COMPANY and all departments, employees and timecards related to it
+     * @param companyName
+     * @return int affectedRows
+     */
     public int deleteCompany(String companyName) {
         if(dl.deleteCompany(companyName) == 0) {
             return 0;

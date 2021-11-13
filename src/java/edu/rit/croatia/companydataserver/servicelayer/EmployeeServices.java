@@ -19,13 +19,18 @@ public class EmployeeServices {
     private UriInfo context;
 
     /**
-     * Creates a new instance of CompanyServices
+     * Creates a new instance of EmployeeServices
      */
     public EmployeeServices() {
         gson = new Gson();
         company = new EmployeeEntity();
     }
 
+    /**
+     * GET ALL EMPLOYEES
+     * @param companyName
+     * @return Response
+     */
     @GET
     @Path("employees")
     @Produces(MediaType.APPLICATION_JSON)
@@ -33,6 +38,11 @@ public class EmployeeServices {
         return Response.ok(company.getEmployees(companyName)).build();
     }
     
+    /**
+     * GET AN EMPLOYEE
+     * @param employeeId
+     * @return Response
+     */
     @GET
     @Path("employee")
     @Produces(MediaType.APPLICATION_JSON)
@@ -40,6 +50,17 @@ public class EmployeeServices {
         return Response.ok(company.getEmployee(employeeId)).build();
     }
     
+    /**
+     * CREATE EMPLOYEE
+     * @param emp_name
+     * @param emp_no
+     * @param hire_date
+     * @param job
+     * @param salary
+     * @param dept_id
+     * @param mng_id
+     * @return Response
+     */
     @POST
     @Path("employee")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -56,6 +77,11 @@ public class EmployeeServices {
         return Response.ok(insertEmployee).build();
     }
     
+    /**
+     * UPDATE EMPLOYEE
+     * @param inJson
+     * @return Response
+     */
     @Path("employee")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -65,6 +91,11 @@ public class EmployeeServices {
         return Response.ok(updateEmployee).build();
     }
     
+    /**
+     * DELETE EMPLOYEE
+     * @param id
+     * @return Response
+     */
     @Path("employee")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)

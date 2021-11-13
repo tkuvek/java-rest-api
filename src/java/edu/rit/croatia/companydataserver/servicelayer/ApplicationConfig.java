@@ -3,10 +3,6 @@ package edu.rit.croatia.companydataserver.servicelayer;
 import java.util.Set;
 import javax.ws.rs.core.Application;
 
-/**
- *
- * @author Kristina
- */
 @javax.ws.rs.ApplicationPath("webresources")
 public class ApplicationConfig extends Application {
 

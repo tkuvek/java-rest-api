@@ -22,6 +22,11 @@ public class EmployeeEntity {
         }
     }
 
+    /**
+     * Gets all employees by companyName
+     * @param companyName
+     * @return String Json List
+     */
     public String getEmployees(String companyName) {
         List<Employee> employees = dl.getAllEmployee(companyName);
         if (employees.isEmpty()) {
@@ -32,6 +37,11 @@ public class EmployeeEntity {
         }
     }
     
+    /**
+     * Get a specific employee by emp_id
+     * @param employeeId
+     * @return String Json object
+     */
     public String getEmployee(int employeeId) {
         Employee employee = dl.getEmployee(employeeId);
         if (employee == null) {
@@ -41,6 +51,11 @@ public class EmployeeEntity {
         }
     }
 
+    /**
+     * Create/insert an employee
+     * @param employee
+     * @return String Json object of the created employee
+     */
     public String insertEmployee(Employee employee) {
         if(dl.insertEmployee(employee) == null){
             return "{\"error:\": \"Failed to insert employee.\"}";
@@ -49,6 +64,11 @@ public class EmployeeEntity {
         }
     }
 
+    /**
+     * Update/put an existing employee
+     * @param inJson
+     * @return String json object
+     */
     public String updateEmployee(String inJson) {
       Employee employee = gson.fromJson(inJson, Employee.class);
       if(dl.updateEmployee(employee) == null) {
@@ -58,6 +78,11 @@ public class EmployeeEntity {
       }
     }
     
+    /**
+     * Delete an employee by emp_id
+     * @param id
+     * @return int of the employee to be deleted
+     */
     public int deleteEmployee(int id) {
       if(dl.deleteEmployee(id) == 0) {
          return 0;

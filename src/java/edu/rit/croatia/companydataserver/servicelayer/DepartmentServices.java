@@ -8,11 +8,6 @@ import com.google.gson.Gson;
 
 import javax.ws.rs.*;
 
-/**
- * REST Web Service
- *
- * @author Kristina
- */
 @Path("CompanyServices")
 public class DepartmentServices {
 
@@ -23,13 +18,18 @@ public class DepartmentServices {
     private UriInfo context;
 
     /**
-     * Creates a new instance of CompanyServices
+     * Creates a new instance of DepartmentServices
      */
     public DepartmentServices() {
         gson = new Gson();
         company = new DepartmentEntity();
     }
 
+    /**
+     * GET ALL DEPARTMENTS FOR COMPANY
+     * @param companyName
+     * @return Response
+     */
     @GET
     @Path("departments")
     @Produces(MediaType.APPLICATION_JSON)
@@ -37,6 +37,12 @@ public class DepartmentServices {
         return Response.ok(company.getDepartments(companyName)).build();
     }
 
+    /**
+     * GET A SINGLE DEPARTMENT BY COMPANY AND ID
+     * @param companyName
+     * @param id
+     * @return Response
+     */
     @GET
     @Path("department")
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,6 +50,14 @@ public class DepartmentServices {
         return Response.ok(company.getDepartment(companyName, id)).build();
     }
 
+    /**
+     * CREATE/INSERT A DEPARTMENT
+     * @param c
+     * @param dept_name
+     * @param dept_no
+     * @param location
+     * @return Response
+     */
     @POST
     @Path("department")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -61,6 +75,11 @@ public class DepartmentServices {
         }
     }
 
+    /**
+     * UPDATE A DEPARTMENT
+     * @param inJson
+     * @return
+     */
     @Path("department")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -70,6 +89,12 @@ public class DepartmentServices {
         return Response.ok(updateDepartment).build();
     }
 
+    /**
+     * DELETE A DEPARTMENT BY dept_id and company
+     * @param id
+     * @param companyName
+     * @return Response
+     */
     @Path("department")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)

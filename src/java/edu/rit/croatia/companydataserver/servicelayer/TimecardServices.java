@@ -5,11 +5,8 @@ import edu.rit.croatia.companydataserver.businesslayer.TimecardEntity;
 import javax.ws.rs.core.*;
 
 import com.google.gson.Gson;
-import companydata.Employee;
 import java.sql.Timestamp;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import javax.ws.rs.*;
 
@@ -23,7 +20,7 @@ public class TimecardServices {
     private UriInfo context;
 
     /**
-     * Creates a new instance of CompanyServices
+     * Creates a new instance of TimecardServices
      */
     
     public TimecardServices() {
@@ -31,6 +28,11 @@ public class TimecardServices {
         company = new TimecardEntity();
     }
 
+    /**
+     * GET A TIMECARD BY TIMECARD_ID
+     * @param timecardId
+     * @return Response
+     */
     @GET
     @Path("timecard")
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,6 +40,11 @@ public class TimecardServices {
         return Response.ok(company.getTimecard(timecardId)).build();
     }
 
+    /**
+     * GET ALL TIMECARDS FOR A SPECIFIC EMPLOYEE
+     * @param emp_id
+     * @return Response
+     */
     @GET
     @Path("timecards")
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +52,13 @@ public class TimecardServices {
         return Response.ok(company.getTimecards(emp_id)).build();
     }
 
+    /**
+     * CREATE/INSERT A TIMECARD
+     * @param start_time
+     * @param end_time
+     * @param emp_id
+     * @return Response
+     */
     @POST
     @Path("timecard")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -56,19 +70,29 @@ public class TimecardServices {
     ) {
 
         Timecard tcObject = new Timecard(start_time, end_time, emp_id);
-        company.insertTimecard(tcObject);
-        return Response.ok("{\n" + "\"success\":{\n" + "{\n" + "\"start_time\":" + tcObject.getStartTime() + "\n" + "\"end_time\":" + tcObject.getEndTime() + "\n" + "\"emp_id\":" + tcObject.getEmpId() + "\n}" + "\n}").build();
+        String insertTimecard = company.insertTimecard(tcObject);
+        return Response.ok(insertTimecard).build();
     }
 
+    /**
+     * UPDATE A TIMECARD
+     * @param inJson
+     * @return Response
+     */
     @Path("timecard")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTimecard(String inJson) {
         String updateTimecard = company.updateTimecard(inJson);
-        return Response.ok("{\n" + "\"success\":" + updateTimecard + "\n}").build();
+        return Response.ok(updateTimecard).build();
     }
 
+    /**
+     * DELETE A TIMECARD BY TIMECARD_ID
+     * @param timecard_id
+     * @return Response
+     */
     @Path("timecard")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
