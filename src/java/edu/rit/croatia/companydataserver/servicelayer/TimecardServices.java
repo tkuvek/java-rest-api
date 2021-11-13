@@ -25,6 +25,7 @@ public class TimecardServices {
     /**
      * Creates a new instance of CompanyServices
      */
+    
     public TimecardServices() {
         gson = new Gson();
         company = new TimecardEntity();
@@ -47,7 +48,6 @@ public class TimecardServices {
     @POST
     @Path("timecard")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    // @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertTimecard(
             @FormParam("start_time") Timestamp start_time,
@@ -56,7 +56,6 @@ public class TimecardServices {
     ) {
 
         Timecard tcObject = new Timecard(start_time, end_time, emp_id);
-        // String inJson = Response.ok(deptObject.toString());
         company.insertTimecard(tcObject);
         return Response.ok("{\n" + "\"success\":{\n" + "{\n" + "\"start_time\":" + tcObject.getStartTime() + "\n" + "\"end_time\":" + tcObject.getEndTime() + "\n" + "\"emp_id\":" + tcObject.getEmpId() + "\n}" + "\n}").build();
     }
@@ -66,19 +65,20 @@ public class TimecardServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTimecard(String inJson) {
-        // String inJson = gson.toJson(timecard, Timecard.class);
-        // DepartmentEntity dept = gson.fromJson(inJs"on, DepartmentEntity.class);
-        company.updateTimecard(inJson);
-        return Response.ok("{\n" + "\"success\":" + inJson + "\n}").build();
+        String updateTimecard = company.updateTimecard(inJson);
+        return Response.ok("{\n" + "\"success\":" + updateTimecard + "\n}").build();
     }
 
     @Path("timecard")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteDepartment(@QueryParam("timecard_id") int timecard_id) {
-        company.deleteTimecard(timecard_id);
-        return Response.ok("{\n" + "\"success\": " + "Timecard " + timecard_id + " deleted" + "\n}").build();
+    public Response deleteTimecard(@QueryParam("timecard_id") int timecard_id) {
+        if(company.deleteTimecard(timecard_id) == 0) {
+            return Response.ok("{\"error:\": \"Failed to delete timecard with id: " + timecard_id + ".\"}").build();
+        } else {
+            return Response.ok("{\n" + " \"success\": \"Timecard " + timecard_id + " deleted.\"}").build();
+        }
     }
 
 }

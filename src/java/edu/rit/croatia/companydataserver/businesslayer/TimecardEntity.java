@@ -38,21 +38,28 @@ public class TimecardEntity {
         return gson.toJson(timecards);
     }
 
-    public Timecard insertTimecard(Timecard inTC) {
+    public String insertTimecard(Timecard inTC) {
         if (dl.insertTimecard(inTC) == null) {
-            return null;
+            return "{\"error:\": \"No timecard is inserted.\"}";
         } else {
-            return inTC;
+            return ("{ \n\"success\":" + gson.toJson(inTC) + "\n}");
         }
     }
     
     public String updateTimecard(String inJson) {
       Timecard timecard = gson.fromJson(inJson, Timecard.class);
-      dl.updateTimecard(timecard);
-      return inJson;
+      if(dl.updateTimecard(timecard) == null) {
+          return "{\"error:\": \"Failed to update timecard.\"}";
+      } else {
+          return ("{ \n\"success\":" + inJson + "\n}");
+      } 
     }
 
     public int deleteTimecard(int timecard_id) {
-        return dl.deleteTimecard(timecard_id);
+        if(dl.deleteTimecard(timecard_id) == 0) {
+            return 0;
+        } else {
+            return timecard_id;
+        }
     }
 }
