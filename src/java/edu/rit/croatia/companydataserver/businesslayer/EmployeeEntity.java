@@ -127,11 +127,10 @@ public class EmployeeEntity {
      */
     public String deleteEmployee(int id) {
         validator.employeeExists(id);
-      if(dl.deleteEmployee(id) == 0) {
-         return validator.getErrorMessages();
-      } else {
+        
+        if(!validator.isSuccess()) return validator.getErrorMessages();
+
         return "{\n" + " \"success\": \"Employee " + id + " deleted.\"}";
-      }
     }
     
 }

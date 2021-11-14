@@ -78,9 +78,6 @@ public class TimecardEntity {
         
         validator.validateTimecardConditions(start, end);
         validator.employeeExists(emp_id);
-
-   
-        //Timecard timecard = new Timecard(start, end, emp_id);
         
         if(!validator.isSuccess()) {
             response = validator.getErrorMessages();

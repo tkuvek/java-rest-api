@@ -115,10 +115,9 @@ public class DepartmentEntity {
      */
     public String deleteDepartment(String comp, int dept_id){
       validator.departmentExists(comp, dept_id);
-      if(dl.deleteDepartment(comp, dept_id) == 0) {
-         return validator.getErrorMessages();
-      } else {
+      
+      if(!validator.isSuccess()) return validator.getErrorMessages();
+
         return "{\n" + " \"success\": \"Department with id " + dept_id + " deleted.\"}";
-      }
    }
 }

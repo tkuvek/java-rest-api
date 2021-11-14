@@ -107,16 +107,7 @@ public class Validator {
             addError("Hire date must be in the past.");
     }
     
-//    public Timestamp checkTimestamp(String timestamp) {
-//        Timestamp ts = null;
-//        try {
-//            ts = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp).getTime());
-//        } catch (ParseException ex) {
-//            addError("Incorrect format, please match yyyy-MM-dd HH:mm:ss");
-//            Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return ts;
-//    }
+    
     public void validateTimecardConditions(Timestamp startDate, Timestamp endDate) {
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
