@@ -83,6 +83,7 @@ public class EmployeeEntity {
             validator.departmentExists(companyName, dept_id);
             validator.managerExists(mng_id);
             validator.uniqueEmpNo(emp_no);
+            validator.validateHireDate(hiringDateSQL);
             Employee employee = new Employee(emp_name, emp_no, hiringDateSQL, job, salary, dept_id, mng_id);
             if(dl.insertEmployee(employee) == null){
                 response = validator.getErrorMessages();

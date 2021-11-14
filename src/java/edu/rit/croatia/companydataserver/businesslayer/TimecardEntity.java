@@ -73,12 +73,16 @@ public class TimecardEntity {
      */
     public String insertTimecard(String start_time, String end_time, int emp_id) throws ParseException {
         String response = null;
-        validator.employeeExists(emp_id);
         Timestamp start = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(start_time).getTime());
         Timestamp end = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(end_time).getTime());
-        Timecard timecard = new Timecard(start, end, emp_id);
+        
+        validator.validateTimecardConditions(start, end);
+        validator.employeeExists(emp_id);
+
    
-        if (dl.insertTimecard(timecard) == null) {
+//        Timecard timecard = new Timecard(start, end, emp_id);
+
+        if(!validator.isSuccess()) {
             response = validator.getErrorMessages();
         } else {
             List<Timecard> allTimecard = dl.getAllTimecard(emp_id);
@@ -102,6 +106,7 @@ public class TimecardEntity {
       Timecard timecard = gson.fromJson(inJson, Timecard.class);
       validator.employeeExists(timecard.getEmpId());
       validator.timecardExists(timecard.getId());
+      validator.validateTimecardConditions(timecard.getStartTime(), timecard.getEndTime());
       if(dl.updateTimecard(timecard) == null) {
           response = validator.getErrorMessages();
       } else {
