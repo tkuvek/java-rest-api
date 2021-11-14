@@ -5,7 +5,11 @@ import edu.rit.croatia.companydataserver.businesslayer.TimecardEntity;
 import javax.ws.rs.core.*;
 
 import com.google.gson.Gson;
+import edu.rit.croatia.companydataserver.businesslayer.Validator;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 import javax.ws.rs.*;
@@ -15,6 +19,7 @@ public class TimecardServices {
 
     private TimecardEntity company = null;
     private Gson gson = null;
+    Validator validator = null;
 
     @Context
     private UriInfo context;
@@ -26,6 +31,7 @@ public class TimecardServices {
     public TimecardServices() {
         gson = new Gson();
         company = new TimecardEntity();
+        validator = new Validator();
     }
 
     /**
@@ -48,7 +54,7 @@ public class TimecardServices {
     @GET
     @Path("timecards")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTimecards(@QueryParam("emp_id") String emp_id) {
+    public Response getTimecards(@QueryParam("emp_id") int emp_id) {
         return Response.ok(company.getTimecards(emp_id)).build();
     }
 
@@ -58,6 +64,7 @@ public class TimecardServices {
      * @param end_time
      * @param emp_id
      * @return Response
+     * @throws java.text.ParseException
      */
     @POST
     @Path("timecard")
@@ -67,10 +74,12 @@ public class TimecardServices {
             @FormParam("start_time") Timestamp start_time,
             @FormParam("end_time") Timestamp end_time,
             @FormParam("emp_id") int emp_id
-    ) {
-
+    ) throws ParseException {
         Timecard tcObject = new Timecard(start_time, end_time, emp_id);
-        String insertTimecard = company.insertTimecard(tcObject);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startStr = df.format(start_time);
+        String endStr = df.format(end_time);
+        String insertTimecard = company.insertTimecard(startStr, endStr, emp_id);
         return Response.ok(insertTimecard).build();
     }
 
@@ -98,11 +107,8 @@ public class TimecardServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteTimecard(@QueryParam("timecard_id") int timecard_id) {
-        if(company.deleteTimecard(timecard_id) == 0) {
-            return Response.ok("{\"error:\": \"Failed to delete timecard with id: " + timecard_id + ".\"}").build();
-        } else {
-            return Response.ok("{\n" + " \"success\": \"Timecard " + timecard_id + " deleted.\"}").build();
-        }
+        String deleteTimecard = company.deleteTimecard(timecard_id);
+        return Response.ok(deleteTimecard).build();
     }
 
 }

@@ -3,6 +3,9 @@ package edu.rit.croatia.companydataserver.businesslayer;
 import com.google.gson.Gson;
 import companydata.DataLayer;
 import companydata.Employee;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class EmployeeEntity {
@@ -29,11 +32,19 @@ public class EmployeeEntity {
      */
     public String getEmployees(String companyName) {
         List<Employee> employees = dl.getAllEmployee(companyName);
-        if (employees.isEmpty()) {
-            return "{\"error:\": \"No employees found for company " + companyName + ".\"}";
-        }
-        else {
-            return gson.toJson(employees);
+        validator.isEmpty(employees);
+        if(!validator.isSuccess()) return validator.getErrorMessages();
+        
+        return gson.toJson(employees);
+    }
+    
+    public Employee getEmployeeObject(int employee_id) {
+        validator.employeeExists(employee_id);
+        if(!validator.isSuccess()) {
+            return null;
+        } else {
+            Employee employee = dl.getEmployee(employee_id);
+            return employee;
         }
     }
     
@@ -43,25 +54,46 @@ public class EmployeeEntity {
      * @return String Json object
      */
     public String getEmployee(int employeeId) {
-        Employee employee = dl.getEmployee(employeeId);
-        if (employee == null) {
-            return "{\"error:\": \"No employee found with id: " + employeeId + ".\"}";
+        validator.employeeExists(employeeId);
+        if(!validator.isSuccess()) {
+            return validator.getErrorMessages();
         } else {
-           return gson.toJson(employee);
+            Employee employee = dl.getEmployee(employeeId);
+            return gson.toJson(employee);
         }
     }
 
     /**
      * Create/insert an employee
-     * @param employee
+     * @param companyName
+     * @param emp_name
+     * @param emp_no
+     * @param hire_date
+     * @param job
+     * @param salary
+     * @param dept_id
+     * @param mng_id
      * @return String Json object of the created employee
+     * @throws java.text.ParseException
      */
-    public String insertEmployee(Employee employee) {
-        if(dl.insertEmployee(employee) == null){
-            return "{\"error:\": \"Failed to insert employee.\"}";
-        } else {
-            return "{\n" + " \"success\":" + gson.toJson(employee) + "\n}";
-        }
+    public String insertEmployee(String companyName, String emp_name, String emp_no, String hire_date, String job, double salary, int dept_id, int mng_id) throws ParseException {
+        String response = null;
+            Date hiringDate = new SimpleDateFormat("yyyy-MM-dd").parse(hire_date);
+            java.sql.Date hiringDateSQL = new java.sql.Date(hiringDate.getTime());
+            validator.departmentExists(companyName, dept_id);
+            Employee employee = new Employee(emp_name, emp_no, hiringDateSQL, job, salary, dept_id, mng_id);
+            if(dl.insertEmployee(employee) == null){
+                response = validator.getErrorMessages();
+            } else {
+            List<Employee> allEmployee = dl.getAllEmployee(companyName);
+                for (Employee emp : allEmployee) {
+                    if(emp.getEmpNo().equals(emp_no)){
+                        Employee employeeObject = this.getEmployeeObject(emp.getId());
+                        response = "{\n" + " \"success\":" + gson.toJson(employeeObject) + "\n}";
+                    }
+                }
+            }
+        return response;
     }
 
     /**
@@ -70,12 +102,17 @@ public class EmployeeEntity {
      * @return String json object
      */
     public String updateEmployee(String inJson) {
+      String response;
       Employee employee = gson.fromJson(inJson, Employee.class);
-      if(dl.updateEmployee(employee) == null) {
-            return "{\"error:\": \"Failed to update employee.\"}";
-      } else {
-            return "{\n" + " \"success\":" + gson.toJson(employee) + "\n}";
-      }
+      validator.departmentExists("tk9480", employee.getDeptId());
+      validator.employeeExists(employee.getId());
+
+        if(dl.updateEmployee(employee) == null) {
+            response = validator.getErrorMessages();
+        } else {
+            response = "{\n" + " \"success\":" + gson.toJson(employee) + "\n}";
+        }
+      return response;
     }
     
     /**
@@ -83,11 +120,12 @@ public class EmployeeEntity {
      * @param id
      * @return int of the employee to be deleted
      */
-    public int deleteEmployee(int id) {
+    public String deleteEmployee(int id) {
+        validator.employeeExists(id);
       if(dl.deleteEmployee(id) == 0) {
-         return 0;
+         return validator.getErrorMessages();
       } else {
-          return id;
+        return "{\n" + " \"success\": \"Employee " + id + " deleted.\"}";
       }
     }
     

@@ -2,7 +2,10 @@ package edu.rit.croatia.companydataserver.businesslayer;
 
 import com.google.gson.Gson;
 import companydata.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.sql.Timestamp;
+import java.text.ParseException;
 
 public class TimecardEntity {
 
@@ -28,11 +31,23 @@ public class TimecardEntity {
      * @return String json object
      */
     public String getTimecard(String timecard_id) {
+        validator.timecardExists(Integer.parseInt(timecard_id));
+        if(!validator.isSuccess())  {
+            return validator.getErrorMessages();
+        } else {
         Timecard timecard = dl.getTimecard(Integer.parseInt(timecard_id));
-        if (timecard == null) {
-            return "{\"error:\": \"No timecard found for ID " + timecard_id + ".\"}";
-        }
         return gson.toJson(timecard);
+        }
+    }
+    
+    public Timecard getTimecardObject(String timecard_id) {
+        validator.timecardExists(Integer.parseInt(timecard_id));
+        if(!validator.isSuccess()) {
+            return null;
+        } else {
+            Timecard tc = dl.getTimecard(Integer.parseInt(timecard_id));
+            return tc;
+        }
     }
 
     /**
@@ -40,25 +55,42 @@ public class TimecardEntity {
      * @param emp_id
      * @return String Json List
      */
-    public String getTimecards(String emp_id) {
-        List<Timecard> timecards = dl.getAllTimecard(Integer.parseInt(emp_id));
-        if (timecards.isEmpty()) {
-            return "{\"error:\": \"No timecards found for employee " + emp_id + ".\"}";
-        }
+    public String getTimecards(int emp_id) {
+        validator.employeeExists(emp_id);
+        List<Timecard> timecards = dl.getAllTimecard(emp_id);
+        validator.isEmpty(timecards);
+        if(!validator.isSuccess()) return validator.getErrorMessages();
         return gson.toJson(timecards);
     }
 
     /**
      * Create/insert a timecard
-     * @param inTC
+     * @param start_time
+     * @param end_time
+     * @param emp_id
      * @return String Json object of the created timecard
+     * @throws java.text.ParseException
      */
-    public String insertTimecard(Timecard inTC) {
-        if (dl.insertTimecard(inTC) == null) {
-            return "{\"error:\": \"No timecard is inserted.\"}";
+    public String insertTimecard(String start_time, String end_time, int emp_id) throws ParseException {
+        String response = null;
+        validator.employeeExists(emp_id);
+        if(!validator.isSuccess()) return validator.getErrorMessages();
+        Timestamp start = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(start_time).getTime());
+        Timestamp end = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(end_time).getTime());
+        Timecard timecard = new Timecard(start, end, emp_id);
+   
+        if (dl.insertTimecard(timecard) == null) {
+            response = validator.getErrorMessages();
         } else {
-            return ("{ \n\"success\":" + gson.toJson(inTC) + "\n}");
+            List<Timecard> allTimecard = dl.getAllTimecard(emp_id);
+                for (Timecard tc : allTimecard) {
+                    if(tc.getEmpId() == emp_id){
+                        Timecard timecardObject = this.getTimecardObject(String.valueOf(tc.getId()));
+                        response = "{\n" + " \"success\":" + gson.toJson(timecardObject) + "\n}";
+                    }
+                }
         }
+        return response;
     }
     
     /**
@@ -67,12 +99,15 @@ public class TimecardEntity {
      * @return String Json object of the updated timecard
      */
     public String updateTimecard(String inJson) {
+      String response;
       Timecard timecard = gson.fromJson(inJson, Timecard.class);
+      validator.timecardExists(timecard.getId());
       if(dl.updateTimecard(timecard) == null) {
-          return "{\"error:\": \"Failed to update timecard.\"}";
+          response = validator.getErrorMessages();
       } else {
-          return ("{ \n\"success\":" + inJson + "\n}");
+          response = ("{ \n\"success\":" + inJson + "\n}");
       } 
+      return response;
     }
 
     /**
@@ -80,11 +115,14 @@ public class TimecardEntity {
      * @param timecard_id
      * @return int of the timecard to be deleted
      */
-    public int deleteTimecard(int timecard_id) {
-        if(dl.deleteTimecard(timecard_id) == 0) {
-            return 0;
-        } else {
-            return timecard_id;
-        }
+    public String deleteTimecard(int timecard_id) {
+      String response;
+      validator.timecardExists(timecard_id);
+      if(dl.deleteTimecard(timecard_id) == 0) {
+         response = validator.getErrorMessages();
+      } else {
+        response = "{\n" + " \"success\": \"Timecard " + timecard_id + " deleted.\"}";
+      }
+      return response;
     }
 }

@@ -29,15 +29,10 @@ public class DepartmentEntity {
      */
     public String getDepartments(String companyName) {
         List<Department> departments = dl.getAllDepartment(companyName);
-        if (departments.isEmpty()) {
-            return "{\"error:\": \"No department found for company " + companyName + ".\"}";
-        }
+        validator.isEmpty(departments);
+        if(!validator.isSuccess()) return validator.getErrorMessages();
         return gson.toJson(departments);
     }
-
-    /*
-        
-    */
 
     /**
      * Gets a specific department
@@ -47,26 +42,49 @@ public class DepartmentEntity {
      */
 
     public String getDepartment(String companyName, String deptId) {
-        Department department = dl.getDepartment(companyName, Integer.parseInt(deptId));
-        if (department == null) {
-            return "{\"error:\": \"No department found for company " + companyName + ".\"}";
+        validator.departmentExists(companyName, Integer.parseInt(deptId));
+        if(!validator.isSuccess())  {
+            return validator.getErrorMessages();
         } else {
+            Department department = dl.getDepartment(companyName, Integer.parseInt(deptId));
             return gson.toJson(department);
+        }
+    }
+    
+    public Department getDepartmentObject(String companyName, String deptId) {
+        validator.departmentExists(companyName, Integer.parseInt(deptId));
+        if(!validator.isSuccess()) {
+            return null;
+        } else {
+            Department department = dl.getDepartment(companyName, Integer.parseInt(deptId));
+            return department;
         }
     }
     
     /**
      * Create/Insert a new department
-     * @param dept
+     * @param company
+     * @param dept_name
+     * @param dept_no
+     * @param location
      * @return Department object
      */
-
-    public Department insertDepartment(Department dept) {
-        if(dl.insertDepartment(dept) == null){
-            return null;
-        } else {
-            return dept;
-        }
+    public String insertDepartment(String company, String dept_name, String dept_no, String location) {
+            String response = null;
+            Department department = new Department(company, dept_name, dept_no, location);
+            
+            if(dl.insertDepartment(department) == null){
+                response = validator.getErrorMessages();
+            } else {
+            List<Department> allDepartment = dl.getAllDepartment(company);
+                for (Department dept : allDepartment) {
+                    if(dept.getDeptNo().equals(dept_no)){
+                        Department departmentObject = this.getDepartmentObject(company, String.valueOf(dept.getId()));
+                        response = "{\n" + " \"success\":" + gson.toJson(departmentObject) + "\n}";
+                    }
+                }
+            }
+        return response;
     }
 
     /**
@@ -75,12 +93,17 @@ public class DepartmentEntity {
      * @return Json string of the updated object
      */
     public String updateDepartment(String dept){
+      String response;
       Department department = gson.fromJson(dept, Department.class);
-        if (dl.updateDepartment(department) == null) {
-            return "{\"error:\": \"Unable to update department.\"}";
+      validator.departmentExists("tk9480", department.getId());
+
+        if(dl.updateDepartment(department) == null) {
+            response = validator.getErrorMessages();
         } else {
-            return "{\n" + " \"success\":" + gson.toJson(department) + "\n}";
+            response = "{\n" + " \"success\":" + gson.toJson(department) + "\n}";
         }
+      return response;
+
    }
 
     /**
@@ -89,12 +112,12 @@ public class DepartmentEntity {
      * @param dept_id
      * @return int of the deleted department
      */
-    public int deleteDepartment(String comp, int dept_id){
-      
+    public String deleteDepartment(String comp, int dept_id){
+      validator.departmentExists(comp, dept_id);
       if(dl.deleteDepartment(comp, dept_id) == 0) {
-         return 0;
+         return validator.getErrorMessages();
       } else {
-          return dept_id;
+        return "{\n" + " \"success\": \"Department with id " + dept_id + " deleted.\"}";
       }
    }
 }

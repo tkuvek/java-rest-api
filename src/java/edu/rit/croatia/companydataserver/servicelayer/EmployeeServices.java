@@ -4,8 +4,10 @@ import edu.rit.croatia.companydataserver.businesslayer.EmployeeEntity;
 import javax.ws.rs.core.*;
 
 import com.google.gson.Gson;
-import companydata.Employee;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.ws.rs.*;
 
@@ -52,6 +54,7 @@ public class EmployeeServices {
     
     /**
      * CREATE EMPLOYEE
+     * @param companyName
      * @param emp_name
      * @param emp_no
      * @param hire_date
@@ -60,20 +63,23 @@ public class EmployeeServices {
      * @param dept_id
      * @param mng_id
      * @return Response
+     * @throws java.text.ParseException
      */
     @POST
     @Path("employee")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createEmployee(@FormParam("emp_name") String emp_name,
+    public Response createEmployee(@FormParam("company") String companyName,
+                                   @FormParam("emp_name") String emp_name,
                                    @FormParam("emp_no") String emp_no,
                                    @FormParam("hire_date") Date hire_date, 
                                    @FormParam("job") String job,
                                    @FormParam("salary") double salary,
                                    @FormParam("dept_id") int dept_id,
-                                   @FormParam("mng_id") int mng_id){
-        Employee employeeObject = new Employee(emp_name, emp_no, hire_date, job, salary, dept_id, mng_id);
-        String insertEmployee = company.insertEmployee(employeeObject);
+                                   @FormParam("mng_id") int mng_id) throws ParseException{
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = df.format(hire_date);
+        String insertEmployee = company.insertEmployee(companyName, emp_name, emp_no, dateStr, job, salary, dept_id, mng_id);
         return Response.ok(insertEmployee).build();
     }
     
@@ -101,11 +107,7 @@ public class EmployeeServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteEmployee(@QueryParam("emp_id") int id) {
-        if(company.deleteEmployee(id) == 0) {
-            return Response.ok("{\"error:\": \"Failed to delete employee with id: " + id +".\"}").build();
-        } else {
-            return Response.ok("{\n" + " \"success\": \"Employee " + id + " deleted.\"}").build();
-        }
+        return Response.ok(company.deleteEmployee(id)).build();
     }
     
 }

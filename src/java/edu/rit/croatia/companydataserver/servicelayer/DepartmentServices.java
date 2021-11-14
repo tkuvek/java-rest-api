@@ -1,6 +1,5 @@
 package edu.rit.croatia.companydataserver.servicelayer;
 
-import companydata.Department;
 import edu.rit.croatia.companydataserver.businesslayer.DepartmentEntity;
 import javax.ws.rs.core.*;
 
@@ -67,12 +66,8 @@ public class DepartmentServices {
                                      @FormParam("dept_no") String dept_no, 
                                      @FormParam("location") String location
                                     ) {                                 
-        Department deptObject = new Department(c, dept_name, dept_no, location);
-        if(company.insertDepartment(deptObject) == null){
-            return Response.ok("{\"error:\": \"Failed to insert department.\"}").build();
-        } else {
-            return Response.ok("{\n" + " \"success\":" + gson.toJson(deptObject) + "\n}").build();
-        }
+        String insertDepartment = company.insertDepartment(c, dept_name, dept_no, location);
+        return Response.ok(insertDepartment).build();
     }
 
     /**
@@ -100,10 +95,7 @@ public class DepartmentServices {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDepartment(@QueryParam("dept_id") int id, @QueryParam("company") String companyName) {
-        if(company.deleteDepartment(companyName, id) == 0) {
-            return Response.ok("{\"error:\": \"Failed to delete department with id: " + id +".\"}").build();
-        } else {
-            return Response.ok("{\n" + " \"success\": \"Department with id " + id + " deleted.\"}").build();
-        }
+        String deleteDepartment = company.deleteDepartment(companyName, id);
+        return Response.ok(deleteDepartment).build();
     }
 }
