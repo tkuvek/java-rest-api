@@ -80,8 +80,8 @@ public class TimecardEntity {
         validator.employeeExists(emp_id);
 
    
-//        Timecard timecard = new Timecard(start, end, emp_id);
-
+        //Timecard timecard = new Timecard(start, end, emp_id);
+        
         if(!validator.isSuccess()) {
             response = validator.getErrorMessages();
         } else {
@@ -89,6 +89,8 @@ public class TimecardEntity {
                 for (Timecard tc : allTimecard) {
                     if(tc.getEmpId() == emp_id){
                         Timecard timecardObject = this.getTimecardObject(String.valueOf(tc.getId()));
+                        timecardObject.setStartTime(start);
+                        timecardObject.setEndTime(end);
                         response = "{\n" + " \"success\":" + gson.toJson(timecardObject) + "\n}";
                     }
                 }
@@ -102,17 +104,15 @@ public class TimecardEntity {
      * @return String Json object of the updated timecard
      */
     public String updateTimecard(String inJson) {
-      String response;
       Timecard timecard = gson.fromJson(inJson, Timecard.class);
-      validator.employeeExists(timecard.getEmpId());
+      
       validator.timecardExists(timecard.getId());
       validator.validateTimecardConditions(timecard.getStartTime(), timecard.getEndTime());
-      if(dl.updateTimecard(timecard) == null) {
-          response = validator.getErrorMessages();
-      } else {
-          response = ("{ \n\"success\":" + inJson + "\n}");
-      } 
-      return response;
+      validator.employeeExists(timecard.getEmpId());
+
+      if(!validator.isSuccess()) return validator.getErrorMessages();
+
+       return ("{ \n\"success\":" + gson.toJson(dl.updateTimecard(timecard)) + "\n}");
     }
 
     /**
