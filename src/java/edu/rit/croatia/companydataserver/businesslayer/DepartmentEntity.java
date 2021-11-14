@@ -72,7 +72,7 @@ public class DepartmentEntity {
     public String insertDepartment(String company, String dept_name, String dept_no, String location) {
             String response = null;
             Department department = new Department(company, dept_name, dept_no, location);
-            
+            validator.uniqueDeptNo(dept_no);
             if(dl.insertDepartment(department) == null){
                 response = validator.getErrorMessages();
             } else {
@@ -96,6 +96,7 @@ public class DepartmentEntity {
       String response;
       Department department = gson.fromJson(dept, Department.class);
       validator.departmentExists("tk9480", department.getId());
+      validator.uniqueDeptNo(department.getDeptNo());
 
         if(dl.updateDepartment(department) == null) {
             response = validator.getErrorMessages();

@@ -5,6 +5,11 @@ import companydata.Department;
 import companydata.Employee;
 import companydata.Timecard;
 import java.util.List;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Validator {
     
@@ -62,5 +67,41 @@ public class Validator {
         if (tc == null) {
             addError("Timecard with id " + id + " does not exist.");
         }
-    }    
+    }
+    
+    public void managerExists(int mng_id) {
+       Employee employee = dl.getEmployee(mng_id);
+       if(employee == null && mng_id != 0) {
+           addError("Employee with id " + mng_id + " does not exist and cannot be asserted as manager.");
+       }
+    }
+    
+    public void uniqueEmpNo(String emp_no) {
+        List<Employee> allEmployee = dl.getAllEmployee("tk9480");
+        for(Employee emp : allEmployee) {
+            if(emp.getEmpNo().equals(emp_no)) {
+                addError("Employee with employee number: " + emp_no + " already exists.");
+            }
+        }
+    }
+    
+    public void uniqueDeptNo(String dept_no) {
+        List<Department> allDepartment = dl.getAllDepartment("tk9480");
+        for(Department dept : allDepartment) {
+            if(dept.getDeptNo().equals(dept_no)){
+                addError("Department with department number: " + dept_no + " already exists.");
+            }
+        }
+    }
+    
+//    public Timestamp checkTimestamp(String timestamp) {
+//        Timestamp ts = null;
+//        try {
+//            ts = new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp).getTime());
+//        } catch (ParseException ex) {
+//            addError("Incorrect format, please match yyyy-MM-dd HH:mm:ss");
+//            Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return ts;
+//    }
 }

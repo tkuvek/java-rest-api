@@ -81,6 +81,8 @@ public class EmployeeEntity {
             Date hiringDate = new SimpleDateFormat("yyyy-MM-dd").parse(hire_date);
             java.sql.Date hiringDateSQL = new java.sql.Date(hiringDate.getTime());
             validator.departmentExists(companyName, dept_id);
+            validator.managerExists(mng_id);
+            validator.uniqueEmpNo(emp_no);
             Employee employee = new Employee(emp_name, emp_no, hiringDateSQL, job, salary, dept_id, mng_id);
             if(dl.insertEmployee(employee) == null){
                 response = validator.getErrorMessages();
@@ -106,6 +108,8 @@ public class EmployeeEntity {
       Employee employee = gson.fromJson(inJson, Employee.class);
       validator.departmentExists("tk9480", employee.getDeptId());
       validator.employeeExists(employee.getId());
+      validator.uniqueEmpNo(employee.getEmpNo());
+      validator.managerExists(employee.getMngId());
 
         if(dl.updateEmployee(employee) == null) {
             response = validator.getErrorMessages();
